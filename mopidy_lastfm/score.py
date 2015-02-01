@@ -46,7 +46,7 @@ class TrackWrapper(object):
 
 class TrackListBuilder(object):
 
-    def __init__(self, scorer):
+    def __init__(self, scorer=NullScorer):
         self._scorer = scorer
 
     def build_track_list(self, tracks, number=None, threshold=1, stop_at_number=False):
@@ -62,6 +62,13 @@ class TrackListBuilder(object):
                 break
         # sort needs to be descending
         return map(operator.itemgetter(1), sorted(scored_tracks)[:number])
+
+
+class NullScorer(object):
+
+    @classmethod
+    def score(self, wrapped_track):
+        return 1
 
 
 class Scorer(object):

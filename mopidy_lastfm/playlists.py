@@ -29,10 +29,12 @@ class LastFMPlaylistsProvider(backend.PlaylistsProvider):
             period=kwargs['period']
         )
         log.debug('got pylast tracks')
-        mopidy_tracks = util.makelist(self.pylast_to_mopidy_tracks(
+        mopidy_tracks = util.makelist(self._backend.pylast_to_mopidy_tracks(
             [ti.item for ti in tracks]
         ))
         log.debug('got mopidy tracks')
+        urllib.parse.urlencode(kwargs)
+        log.debug('made string')
         return models.Playlist(
             tracks=mopidy_tracks,
             name="top tracks",
@@ -41,26 +43,13 @@ class LastFMPlaylistsProvider(backend.PlaylistsProvider):
             )
         )
 
+    @staticmethod
+    def _normalize_kwargs(kwargs):
+        return {
+            key: value[0] if isinstance(value, list) else value
+            for key, value in kwargs.items()
+        }
+
     @property
     def playlists(self):
-        return []
-
-    def lookup(self, uri):
-        log.debug('lookup')
-        _, playlist_type, identifier, query_string = uri.split(':')
-        return self.user_playlist(
-            identifier, **urllib.parse.parse_qs(query_string)
-        )
-
-    def pylast_to_mopidy_tracks(self, pylast_tracks):
-        for tracks in util.segment(pylast_tracks, 20):
-            for playlink, track in zip(
-                self._backend.network.get_track_play_links(tracks),
-                tracks
-            ):
-                if playlink is not None:
-                    yield models.Track(
-                        uri=playlink,
-                        name=track.title,
-                        artists=[track.artist.name]
-                    )
+        return [self._the_playlist]

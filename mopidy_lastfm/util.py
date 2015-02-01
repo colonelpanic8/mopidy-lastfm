@@ -4,6 +4,7 @@ import inspect
 import logging
 
 import six
+import wrapt
 
 from coloredlogs import ColoredStreamHandler
 
@@ -17,6 +18,23 @@ def makelist(value):
         else:
             return [value]
     return value
+
+
+def build_log_decorator(log):
+    @wrapt.decorator
+    def log_enter_function(function, instance, args, kwargs):
+        log.debug("Calling {0}".format(function.__name__))
+        log.debug("Positional arguments {0}".format(args))
+        log.debug("Keyword arguments {0}".format(kwargs))
+        try:
+            result = function(*args, **kwargs)
+        except Exception as e:
+            log.debug("{0} raised exception {1}".format(function.__name__, e))
+            raise
+        log.debug("Call to {0} returned {1}".format(function.__name__, result))
+        return result
+
+    return log_enter_function
 
 
 def makelist_decorator(function):

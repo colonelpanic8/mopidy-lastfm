@@ -28,7 +28,8 @@ setup(
         'Mopidy >= 0.18',
         'Pykka >= 1.1',
         'pylast',
-        'six'
+        'six',
+        'wrapt >= 1.10.0'
     ],
     test_suite='nose.collector',
     tests_require=[

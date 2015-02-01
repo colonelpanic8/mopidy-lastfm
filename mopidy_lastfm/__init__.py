@@ -30,9 +30,8 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        schema['username'] = config.String()
-        schema['password'] = config.Secret()
         schema['api_key'] = config.String()
+        schema['top_list_size'] = config.String()
         schema['secret'] = config.Secret()
         return schema
 
