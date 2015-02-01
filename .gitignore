@@ -6,3 +6,6 @@
 MANIFEST
 build/
 dist/
+
+xunit-py27.xml
+pylast.cache
