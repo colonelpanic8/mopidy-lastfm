@@ -40,5 +40,5 @@ class LastFMBackend(pykka.ThreadingActor, backend.Backend):
                     yield models.Track(
                         uri=playlink,
                         name=track.title,
-                        artists=[track.artist.name]
+                        artists=[models.Artist(name=track.artist.name, uri='lastfm:arteest')]
                     )

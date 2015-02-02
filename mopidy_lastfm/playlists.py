@@ -11,6 +11,7 @@ from . import util
 
 log = logging.getLogger(__name__)
 util.enable_logger(__name__)
+log_decorator = util.build_log_decorator(log)
 
 
 class LastFMPlaylistsProvider(backend.PlaylistsProvider):
@@ -20,23 +21,13 @@ class LastFMPlaylistsProvider(backend.PlaylistsProvider):
         self._the_playlist = self.user_playlist('IvanMalison', limit=10)
         log.debug('done')
 
+    @log_decorator
+    def lookup(self, uri):
+        return self._backend.library.lookup(uri)
+
     def user_playlist(self, username, **kwargs):
-        kwargs.setdefault('limit', 100)
-        kwargs.setdefault('period', pylast.PERIOD_3MONTHS)
-        log.debug('requested {0} - {1}'.format(username, kwargs))
-        tracks = self._backend.network.get_user(username).get_top_tracks(
-            limit=kwargs['limit'],
-            period=kwargs['period']
-        )
-        log.debug('got pylast tracks')
-        mopidy_tracks = util.makelist(self._backend.pylast_to_mopidy_tracks(
-            [ti.item for ti in tracks]
-        ))
-        log.debug('got mopidy tracks')
-        urllib.parse.urlencode(kwargs)
-        log.debug('made string')
         return models.Playlist(
-            tracks=mopidy_tracks,
+            tracks=[],
             name="top tracks",
             uri="lastfm:user:{0}:{1}".format(
                 username, urllib.parse.urlencode(kwargs)

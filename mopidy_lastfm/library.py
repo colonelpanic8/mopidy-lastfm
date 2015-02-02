@@ -5,6 +5,7 @@ import logging
 from six.moves import urllib
 
 from mopidy import backend, models
+from mopidy_spotify import translator
 import pylast
 
 from . import util
@@ -36,8 +37,8 @@ class LastFMLibraryProvider(backend.LibraryProvider):
     def __init__(self, backend):
         self._backend = backend
         self._request_type_to_handler = {
-            'user': self._handle_user_album_lookup,
-            'user-album': self._handle_user_album_lookup,
+            'user': self._handle_user_playlist_lookup, # self._handle_user_album_lookup,
+            'user-album': self._handle_user_playlist_lookup, #self._handle_user_album_lookup,
             'artist': self._handle_artist_album_lookup
         }
 
